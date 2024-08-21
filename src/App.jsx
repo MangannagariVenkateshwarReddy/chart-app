@@ -14,7 +14,7 @@ function App() {
       localStorage.setItem("widgets", JSON.stringify(rawData));
       setWidgetsData(rawData);
     }
-  }, []);
+  }, [widgetsData]);
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevents the default form submission behavior
@@ -28,9 +28,9 @@ function App() {
 
     // Extract title-value pairs
     const newWidgetValues = [
-      { title: formData.get('title1'), value: parseInt(formData.get('value1')) },
-      { title: formData.get('title2'), value: parseInt(formData.get('value2')) },
-      { title: formData.get('title3'), value: parseInt(formData.get('value3')) }
+      { name: formData.get('title1'), value: parseInt(formData.get('value1')) },
+      { name: formData.get('title2'), value: parseInt(formData.get('value2')) },
+      { name: formData.get('title3'), value: parseInt(formData.get('value3')) }
     ];
 
     // Create a new widget object
@@ -41,6 +41,7 @@ function App() {
     localStorage.setItem("widgets", JSON.stringify([...storedWidgets, newWidget]));
     console.log(localStorage.getItem("widgets"));
     setWidgetsData(JSON.stringify([...storedWidgets, newWidget]));
+    window.location.reload();
 
 
 
