@@ -32,6 +32,7 @@ function App() {
       { name: formData.get('title2'), value: parseInt(formData.get('value2')) },
       { name: formData.get('title3'), value: parseInt(formData.get('value3')) }
     ];
+    
 
     // Create a new widget object
     const newWidget = [newWidgetValues, { widgetCategory: category, widgetName: widgetName }];
