@@ -1,0 +1,182 @@
+import { useEffect, useState } from 'react';
+import './App.css';
+import { MyPieChart } from './components/piechart';
+import { rawData } from './rawdata';
+
+function App() {
+  const [widgetData, setWidgetData] = useState([]);
+  const [entries, setEntries] = useState([
+    { name: '', value: '' },
+    { name: '', value: '' },
+  ]);
+  const [newWidget, setNewWidget] = useState({});
+
+  useEffect(() => {
+    const storedWidgets = localStorage.getItem("widgets");
+    if (storedWidgets) {
+      setWidgetData(JSON.parse(storedWidgets));
+    } else {
+      localStorage.setItem("widgets", JSON.stringify(rawData));
+    }
+  });
+
+  const handleChangeEntry = (index, field, value) => {
+    const newEntries = [...entries];
+    newEntries[index][field] = value;
+    setEntries(newEntries);
+  };
+
+  const addWidget = (newWidget) => {
+    const updatedWidgets = [...widgetData, newWidget];
+    setWidgetData(updatedWidgets);
+    localStorage.setItem("widgets", JSON.stringify(updatedWidgets));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevents the default form submission behavior
+
+    const widget = [
+        ...entries.map((entry) => ({
+            name: entry.name,
+            value: parseInt(entry.value),
+        })),
+        { widgetName: e.target.widgetName.value, widgetCategory: e.target.category.value },
+    ];
+    addWidget(widget);
+    console.log(widget);
+    e.target.reset();
+    setEntries([
+        { name: '', value: '' },
+        { name: '', value: '' },
+    ]);
+};
+
+
+  return (
+    <div className="App bg-primary-subtle">
+      {/* header starts  */}
+      <header className='p-3'>
+        <nav className='d-flex justify-content-between'>
+          <div className='h2'>
+            CNAPP Dashboard
+          </div>
+          <div>
+            <button className="btn btn-light" data-bs-toggle="modal" data-bs-target="#addWidget">
+              Add Widget +
+            </button>
+          </div>
+        </nav>
+      </header>
+      {/* header ends  */}
+
+      {/* Widgets start here */}
+      <div className="cspm-dashboard p-4">
+        <h3>CSPM Executive Dashboard</h3>
+        <div className="row">
+          {widgetData.map((widget, index) => (
+            <div className="col-lg-4" key={index}>
+              <div className="card position-relative">
+                <div className="card-title position-absolute top-0 start-0 p-3">
+                  <h5 className='pt-2 ps-2 text-dark'>{widget[1].widgetName} </h5>
+                </div>
+                <MyPieChart data={widget} />
+              </div>
+            </div>
+          ))}
+          <div className="col-lg-4">
+            <div className="card d-flex justify-content-center align-items-center">
+              <button className="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addWidget">
+                Add Widget +
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Widgets end here */}
+
+      {/* Modal */}
+      <div
+        className="modal fade"
+        id="addWidget"
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="exampleModalLabel">
+                Create Widget
+              </h1>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <form
+                onSubmit={(e) => {
+                handleSubmit(e)}}
+              >
+                <div className="mb-3">
+                  <select className="form-select" name="category" aria-label="Default select example" required>
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="cspm">CSPM</option>
+                    <option value="cwpp">CWPP</option>
+                    <option value="registry">Registry</option>
+                  </select>
+                </div>
+                <div className="mb-3 form-floating">
+                <input className='form-control' type="text" placeholder='' name="widgetName" />
+                <label htmlFor={`widgetName`}>Widget Name</label>
+                </div>
+
+
+                {entries.map((entry, index) => (
+                  <div key={index} className="mb-3 input-group">
+                    <div className="form-floating">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id={`entryName${index}`}
+                        name={`entryName${index}`}
+                        placeholder="Entry Name"
+                        value={entry.name}
+                        onChange={(e) => handleChangeEntry(index, 'name', e.target.value)}
+                        required
+                      />
+                      <label htmlFor={`entryName${index}`} className="form-label">
+                        Entry Name
+                      </label>
+                    </div>
+                    <input
+                      type="number"
+                      className="form-control ms-2"
+                      id={`entryValue${index}`}
+                      name={`entryValue${index}`}
+                      placeholder="Value"
+                      value={entry.value}
+                      onChange={(e) => handleChangeEntry(index, 'value', e.target.value)}
+                      required
+                    />
+                  </div>
+                ))}
+
+                <div className="text-end">
+                  <button type="submit" className="btn btn-primary">
+                    Add Widget +
+                  </button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Modal ends here */}
+    </div>
+  );
+}
+
+export default App;
